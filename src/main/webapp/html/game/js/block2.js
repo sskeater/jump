@@ -11,6 +11,21 @@ var colors = {
     middleLightGray : 0xbbbbbb,
     middleLightBlack : 0x888888
 };
+config.BLOCK = {
+    radius : 5,
+    width : 10,
+    minRadiusScale : 0.8,
+    maxRadiusScale : 1,
+    height : 5.5,
+    radiusSegments : [ 4, 50 ],
+    floatHeight : 0,
+    minDistance : 1,
+    maxDistance : 17,
+    minScale : BOTTLE.minScale,
+    reduction : BOTTLE.reduction,
+    moveDownVelocity : 0.07,
+    fullHeight : 5.5 / 21 * 40
+};
 config.loader = new THREE.TextureLoader();
 config.cylinder_shadow = new THREE.MeshBasicMaterial({
     map : new THREE.TextureLoader().load('res/cylinder_shadow.png'),
@@ -34,9 +49,7 @@ config.numberMaterial = new THREE.MeshLambertMaterial({
     map : new THREE.TextureLoader().load('res/number.png'),
     alphaTest : 0.6
 });
-
 var _config = config;
-
 var biggerGeometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2 + 0.02, _config.BLOCK.height + 0.04,
         _config.BLOCK.radius * 2 + 0.02);
 var staticGeometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2, _config.BLOCK.height, _config.BLOCK.radius * 2);

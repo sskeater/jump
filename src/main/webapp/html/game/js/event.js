@@ -25,7 +25,6 @@ function clickEnd(e) {
         var left = Math.random() > 0.5;
         left = true;
         index++;
-        // var next = game.getBox();
         var next = Block.pool[index].clone();
         console.info(next.order)
         if (left) {
