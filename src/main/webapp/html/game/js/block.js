@@ -1378,3 +1378,6 @@ Block.poolInit = function() {
     }
 };
 Block.poolInit();
+Block.next = function() {
+    return Block.pool[parseInt(Math.random() * Block.pool.length)].clone();
+};

@@ -15,50 +15,46 @@ function clickEnd(e) {
     if (CURRENT_STATUS == STATUS['START']) {
 
         var length = parseInt(Math.random() * 10 + 20);
-        var lastDirection = nextLeft;
 
-        if (lastDirection) {
-            game['man'].position.z -= game.current.position.z - game.next.position.z;
-        } else {
-            game['man'].position.x -= game.current.position.x - game.next.position.x;
-        }
-        var left = Math.random() > 0.5;
-        left = true;
-        index++;
-        var next = Block.pool[index].clone();
-        console.info(next.order)
-        if (left) {
-            next.position.x = game['man'].position.x;
-            next.position.z = game['man'].position.z - length;
-            if (lastDirection) {
-                console.info('left-left')
-                camera.position.z -= length * 2;
+        var desX = game.next.position.x;
+        var desZ = game.next.position.z;
+
+        var startV = game['man'].position.clone();
+        var diff = game.next.position.clone().sub(startV);
+        jump(diff, diff.length() / 10, jumpOver);
+
+        function jumpOver() {
+
+            var left = Math.random() > 0.5;
+            index++;
+            var next = game.third;
+            if (left) {
+                next.position.x = desX;
+                next.position.z = desZ - length;
             } else {
-                console.info('right-left')
-                // camera.position.x += length/2;
+                next.position.x = desX + length;
+                next.position.z = desZ;
             }
-        } else {
-            next.position.x = game['man'].position.x + length;
-            next.position.z = game['man'].position.z;
-            if (lastDirection) {
-                console.info('left-right')
-                camera.position.z -= length;
-                camera.position.x += length;
-            } else {
-                camera.position.x += length;
-                console.info('right-right')
+            nextLeft = left;
+            var firstV = game.next.position.clone().sub(game.current.position);
+            var secondV = next.position.clone().sub(game.next.position);
+            var cameraV = firstV.add(secondV);
+            cameraV.x /= 2;
+            cameraV.z /= 2;
+            game.current = game.next;
+            game.next = next;
+            game.heap.push(next);
+            game.third = Block.next();
+            var duration = cameraV.length() / 10;
+            if (game.heap.length > 5) {
+                var unuse = game.heap.shift();
+                scene.remove(unuse);
             }
+            scene.add(next);
+            moveGradually(cameraV, duration);
         }
-        nextLeft = left;
-        game.current = game.next;
-        game.next = next;
-        game.heap.push(next);
-        if (game.heap.length > 5) {
-            var unuse = game.heap.shift();
-            scene.remove(unuse);
-        }
-        scene.add(next);
-        render.render(scene, camera);
+
+        // render.render(scene, camera);
     }
 }
 

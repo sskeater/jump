@@ -181,6 +181,7 @@ bottle.build = function() {
 
     this.bottle.position.y = BOTTLE.bodyHeight / 2 - 0.25;
     this.bottle.position.x = 0;
+    this.bottle.castShadow  =true;
 
     return this.bottle;
 };
@@ -208,19 +209,21 @@ var game = {};
 game.heap = [];
 game.initUI = function() {
     var first = Block.pool[0];
-    first.position.x = -10;
+    first.position.x = 0;
     game.current = first;
     game.heap.push(first);
     scene.add(first);
 
     var next = Block.pool[1];
-    next.position.x = 10;
+    next.position.x = 20;
     game.next = next;
     game.heap.push(next);
     scene.add(next);
 
+    game.third = Block.next();
+
     var man = bottle.build();
-    man.position.x = -10;
+    man.position.x = 0;
     man.position.y = 4;
     man.name = 'man';
     game['man'] = man;
@@ -269,3 +272,4 @@ $(document).ready(function() {
     game.start();
     bindEvent();
 });
+
