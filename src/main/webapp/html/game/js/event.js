@@ -51,7 +51,7 @@ gameEvent.press = function(e) {
 
     function jumpOver() {
         audio.begin('combo');
-        var left = Math.random() > 0.5;
+        var left = Math.random() > 0.7;
         index++;
         var next = game.third;
         if (left) {
