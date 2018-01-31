@@ -1373,11 +1373,22 @@ Block.update = function() {
 
 Block.pool = [];
 Block.poolInit = function() {
-    for (var i = 0; i < 30; i++) {
-        Block.pool.push(Block(i));
+    for (var i = 2; i < 96; i++) {
+        Block.pool.push(Block(i % 30));
     }
+    shuffleArray(Block.pool);
 };
+Block.first = Block(0);
+Block.second = Block(1);
 Block.poolInit();
 Block.next = function() {
-    return Block.pool[parseInt(Math.random() * Block.pool.length)].clone();
+    return Block.pool.pop().clone();
 };
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}

@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" id="viewport"
+    content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>test</title>
 <link rel="stylesheet" href="./css/main.css">
 <script type="text/javascript" src="./js/three.js"></script>
@@ -10,17 +11,19 @@
 </head>
 <body>
     <div class="container" id="container"></div>
-    <div class="front" id="front" style="display:none">
-        <div class="score" id="score">8</div>
-        <div class="result" id="result">
-            <div class="pos"></div>
-            <div class="tips"><span>-</span>本次得分<span>-</span></div>
-            <div class="resultScore">74</div>
-        </div>
-        <div class="start" id="start">
-            <img src="./res/play.png" />
-        </div>
-        <div class="history" id="history"></div>
+    <div class="audio" id="audio">
+        <audio src="./res/start.mp3" id="start"></audio>
+        <audio src="./res/scale_intro.mp3" id="press"></audio>
+        <audio src="./res/success.mp3" id="success"></audio>
+        <audio src="./res/fall.mp3" id="fall"></audio>
+        <audio src="./res/combo1.mp3" id="combo1"></audio>
+        <audio src="./res/combo2.mp3" id="combo2"></audio>
+        <audio src="./res/combo3.mp3" id="combo3"></audio>
+        <audio src="./res/combo4.mp3" id="combo4"></audio>
+        <audio src="./res/combo5.mp3" id="combo5"></audio>
+        <audio src="./res/combo6.mp3" id="combo6"></audio>
+        <audio src="./res/combo7.mp3" id="combo7"></audio>
+        <audio src="./res/combo8.mp3" id="combo8"></audio>
     </div>
     <script type="text/javascript" src="./js/jquery.1.11.1.min.js"></script>
     <script type="text/javascript" src="./js/tools.js"></script>
@@ -29,5 +32,6 @@
     <script type="text/javascript" src="./js/block.js"></script>
     <script type="text/javascript" src="./js/tween.js"></script>
     <script type="text/javascript" src="./js/animation.js"></script>
+    <script type="text/javascript" src="./js/audio.js"></script>
 </body>
 </html>

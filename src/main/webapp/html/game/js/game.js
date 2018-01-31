@@ -8,12 +8,15 @@ var HEIGHT = H * Dpr; // 设备像素
 var WIDTH = W * Dpr; // 设备像素
 var aspect = WIDTH / HEIGHT;
 var render, secne, camera;
-var STATUS = {
-    READY : 'ready',
-    START : 'start',
-    END : 'end'
+var statusDefine = {
+    init : 'init',// 初始化
+    ready : 'ready',// 准备好了
+    start : 'start',// 游戏开始
+    press : 'press',// 屏幕按下，准备起跳
+    moving : 'moving',// 蓄力结束，开始跳
+    end : 'end',// 游戏结束
 };
-var CURRENT_STATUS = '';
+var currentStatus = '';
 var nextLeft = false;
 
 function main() {
@@ -47,7 +50,8 @@ function main() {
     game.initUI();
 
     render.render(scene, camera);
-    CURRENT_STATUS = STATUS['READY'];
+    currentStatus = statusDefine['ready'];
+    audio.begin('start');
 }
 
 function groundInit() {
@@ -181,7 +185,7 @@ bottle.build = function() {
 
     this.bottle.position.y = BOTTLE.bodyHeight / 2 - 0.25;
     this.bottle.position.x = 0;
-    this.bottle.castShadow  =true;
+    this.bottle.castShadow = true;
 
     return this.bottle;
 };
@@ -208,13 +212,13 @@ move.people = function(x, y) {
 var game = {};
 game.heap = [];
 game.initUI = function() {
-    var first = Block.pool[0];
+    var first = Block.first;
     first.position.x = 0;
     game.current = first;
     game.heap.push(first);
     scene.add(first);
 
-    var next = Block.pool[1];
+    var next = Block.second;
     next.position.x = 20;
     game.next = next;
     game.heap.push(next);
@@ -230,7 +234,7 @@ game.initUI = function() {
     scene.add(man);
 };
 game.start = function() {
-    CURRENT_STATUS = STATUS['START'];
+    currentStatus = statusDefine['start'];
 };
 
 game.getBox = function() {
@@ -272,4 +276,3 @@ $(document).ready(function() {
     game.start();
     bindEvent();
 });
-

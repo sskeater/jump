@@ -71,23 +71,26 @@ function moveGradually(vector, duration) {
     TweenAnimation(camera.position.x, camera.position.x + vector.x, duration * 500, 'Quad.easeOut', function(value) {
         camera.position.x = value;
     });
-    TweenAnimation(camera.position.z, camera.position.z + vector.z, duration * 500, 'Quad.easeOut', function(value) {
+    TweenAnimation(camera.position.z, camera.position.z + vector.z, duration * 500, 'Quad.easeOut', function(value,
+            complete) {
         camera.position.z = value;
+        if (complete) {
+            currentStatus = statusDefine['start'];
+        }
     });
 }
 
 function jump(vector, duration, callback) {
     var c = 160;
-    TweenAnimation(game.man.position.y, game.man.position.y + 4, duration * c / 2, 'Linear',
-            function(value, complete) {
+    TweenAnimation(game.man.position.y, game.man.position.y + 4, duration * c / 2, 'Linear', function(value, complete) {
+        game.man.position.y = value;
+        if (complete) {
+            TweenAnimation(game.man.position.y, game.man.position.y - 4, duration * c / 2, 'Linear', function(value,
+                    complete) {
                 game.man.position.y = value;
-                if (complete) {
-                    TweenAnimation(game.man.position.y, game.man.position.y - 4, duration * c / 2, 'Linear', function(
-                            value, complete) {
-                        game.man.position.y = value;
-                    });
-                }
             });
+        }
+    });
     TweenAnimation(game.man.position.x, game.man.position.x + vector.x, duration * c, 'Linear', function(value,
             complete) {
         game.man.position.x = value;
