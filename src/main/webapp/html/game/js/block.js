@@ -499,7 +499,7 @@ var Block = function(type, number) {
         var material = new THREE.MeshLambertMaterial({
             map : block.map
         });
-        Block.glowMap = new THREE.TextureLoader().load('res/glow_bag.png');
+        block.glowMap = new THREE.TextureLoader().load('res/glow_bag.png');
         block.hitObj = new THREE.Mesh(geometry, material);
     } else if (type == 16) {
         var geometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2, block.height, _config.BLOCK.radius * 2);
@@ -1108,8 +1108,8 @@ Block.getBox = function() {
     this.boundingBox = new THREE.Box3().setFromObject(this.body);
     return this.boundingBox;
 };
-Block.glow = function() {
-    this.hitObj.material.map = this.glowMap;
+Block.glow = function(block) {
+    block.hitObj.material.map = block.glowMap;
 };
 Block.openDoor = function(block) {
     customAnimation.to(block.door.position, 1, {
@@ -1125,11 +1125,6 @@ Block.closeDoor = function(block) {
     });
     customAnimation.to(block.secondDoor.position, 1, {
         z : -1.7
-    });
-};
-Block.rotateBox = function() {
-    _animation.customAnimation.to(this.middle.rotation, 0.5, {
-        y : -Math.PI / 2
     });
 };
 Block.rotateBox = function(block) {
@@ -1167,55 +1162,55 @@ Block.stopMusic = function() {
         this.musicTimer = null;
     }
 };
-Block.change = function(radius, t, radiusScale) {
-    if (!this.canChange) {
+Block.change = function(block, radius, t, radiusScale) {
+    if (!block.canChange) {
         return;
     }
-    if (this.order >= 9) {
-        var min = this.order >= 13 ? 0.7 : 0.6;
-        this.radiusScale = radiusScale
+    if (block.order >= 9) {
+        var min = block.order >= 13 ? 0.7 : 0.6;
+        block.radiusScale = radiusScale
                 || Math.max(Math.random() * (_config.BLOCK.maxRadiusScale - _config.BLOCK.minRadiusScale)
                         + _config.BLOCK.minRadiusScale, this.min || min);
-        this.radiusScale = +this.radiusScale.toFixed(2);
-        this.radius = radius || this.radiusScale * _config.BLOCK.radius;
-        this.radius = +this.radius.toFixed(2);
-        this.obj.scale.set(this.radiusScale, 1, this.radiusScale);
-        if (this.order == 27) {
-            this.sphere.scale.set(1 / this.radiusScale, 1, 1 / this.radiusScale);
-            this.sphere.updateMatrix();
+        block.radiusScale = +block.radiusScale.toFixed(2);
+        block.radius = radius || block.radiusScale * _config.BLOCK.radius;
+        block.radius = +block.radius.toFixed(2);
+        block.obj.scale.set(block.radiusScale, 1, block.radiusScale);
+        if (block.order == 27) {
+            block.sphere.scale.set(1 / block.radiusScale, 1, 1 / block.radiusScale);
+            block.sphere.updateMatrix();
         }
         // this.plane.scale.z = this.radiusScale;
         return;
     }
-    this.radiusScale = radiusScale || Math.random() * (_config.BLOCK.maxRadiusScale - _config.BLOCK.minRadiusScale)
+    block.radiusScale = radiusScale || Math.random() * (_config.BLOCK.maxRadiusScale - _config.BLOCK.minRadiusScale)
             + _config.BLOCK.minRadiusScale;
-    this.radiusScale = +this.radiusScale.toFixed(2);
-    this.radius = radius || this.radiusScale * _config.BLOCK.radius;
-    this.radius = +this.radius.toFixed(2);
-    this.obj.scale.set(this.radiusScale, 1, this.radiusScale);
-    this.changeColor(t);
+    block.radiusScale = +block.radiusScale.toFixed(2);
+    block.radius = radius || block.radiusScale * _config.BLOCK.radius;
+    block.radius = +block.radius.toFixed(2);
+    block.obj.scale.set(block.radiusScale, 1, block.radiusScale);
+    Block.changeColor(block, t);
 };
-Block.changeColor = function(t) {
-    var type = t || this.types[Math.floor(Math.random() * 3)];
-    if (this.type != type) {
-        this.type = type;
+Block.changeColor = function(block, t) {
+    var type = t || block.types[Math.floor(Math.random() * 3)];
+    if (block.type != type) {
+        block.type = type;
         if (type == 'green') {
-            this.greenMaterial.color.setHex(colors.green);
-            this.whiteMaterial.color.setHex(colors.white);
-            if (this.middleLightGreenMaterial) {
-                this.middleLightGreenMaterial.color.setHex(colors.middleLightGreen);
+            block.greenMaterial.color.setHex(colors.green);
+            block.whiteMaterial.color.setHex(colors.white);
+            if (block.middleLightGreenMaterial) {
+                block.middleLightGreenMaterial.color.setHex(colors.middleLightGreen);
             }
         } else if (type == 'gray') {
-            this.greenMaterial.color.setHex(colors.white);
-            this.whiteMaterial.color.setHex(colors.gray);
-            if (this.middleLightGreenMaterial) {
-                this.middleLightGreenMaterial.color.setHex(colors.middleLightGray);
+            block.greenMaterial.color.setHex(colors.white);
+            block.whiteMaterial.color.setHex(colors.gray);
+            if (block.middleLightGreenMaterial) {
+                block.middleLightGreenMaterial.color.setHex(colors.middleLightGray);
             }
         } else if (type == 'black') {
-            this.greenMaterial.color.setHex(colors.black);
-            this.whiteMaterial.color.setHex(colors.lightBlack);
-            if (this.middleLightGreenMaterial) {
-                this.middleLightGreenMaterial.color.setHex(colors.middleLightBlack);
+            block.greenMaterial.color.setHex(colors.black);
+            block.whiteMaterial.color.setHex(colors.lightBlack);
+            if (block.middleLightGreenMaterial) {
+                block.middleLightGreenMaterial.color.setHex(colors.middleLightBlack);
             }
         }
     }
@@ -1240,24 +1235,21 @@ Block.getVertices = function() {
     return vertices;
 };
 Block.shrink = function() {
-    this.status = 'shrink';
+    game.current.status = 'shrink';
 };
 Block._shrink = function() {
-    // if (this.obj.position.y <= -BLOCK.floatHeight + 25) {
-    this.scale -= _config.BLOCK.reduction;
-    this.scale = Math.max(_config.BLOCK.minScale, this.scale);
-    if (this.scale <= _config.BLOCK.minScale) {
-        this.status = 'stop';
+    game.current.scale -= _config.BLOCK.reduction;
+    game.current.scale = Math.max(_config.BLOCK.minScale, game.current.scale);
+    if (game.current.scale <= _config.BLOCK.minScale) {
+        game.current.status = 'stop';
         return;
     }
-    this.body.scale.y = this.scale;
-    this.shadow.scale.y -= _config.BLOCK.reduction / 2;
-    this.shadow.position.z += _config.BLOCK.reduction / 4 * this.shadowWidth;
-    var distance = _config.BLOCK.reduction / 2 * _config.BLOCK.height * (_config.BLOCK.height - this.height / 2)
-            / _config.BLOCK.height * 2;
-    this.body.position.y -= distance;
-    // }
-    // this.obj.position.y -= BLOCK.moveDownVelocity;
+    game.current.body.scale.y = game.current.scale;
+    game.current.shadow.scale.y -= _config.BLOCK.reduction / 2;
+    game.current.shadow.position.z += _config.BLOCK.reduction / 4 * game.current.shadowWidth;
+    var distance = _config.BLOCK.reduction / 2 * _config.BLOCK.height
+            * (_config.BLOCK.height - game.current.height / 2) / _config.BLOCK.height * 2;
+    game.current.body.position.y -= distance;
 };
 Block.showup = function(i) {
     var shadowZ = this.shadow.position.z;
@@ -1334,52 +1326,54 @@ Block.reset = function() {
     this.boundingBox = null;
 };
 Block.rebound = function() {
-    this.status = 'stop';
-    this.scale = 1;
-    _animation.customAnimation.to(this.body.scale, 0.5, {
+    game.current.status = 'stop';
+    game.current.scale = 1;
+    customAnimation.to(game.current.body.scale, 0.5, {
         ease : 'Elastic.easeOut',
         y : 1
     });
-    _animation.customAnimation.to(this.body.position, 0.5, {
+    customAnimation.to(game.current.body.position, 0.5, {
         ease : 'Elastic.easeOut',
-        y : _config.BLOCK.height / 2 - this.height / 2
+        y : _config.BLOCK.height / 2 - game.current.height / 2
     });
 
-    _animation.customAnimation.to(this.shadow.scale, 0.5, {
+    customAnimation.to(game.current.shadow.scale, 0.5, {
         ease : 'Elastic.easeOut',
-        y : this.shadow.initScale
+        y : game.current.shadow.initScale
     });
-    _animation.customAnimation.to(this.shadow.position, 0.5, {
+    customAnimation.to(game.current.shadow.position, 0.5, {
         ease : 'Elastic.easeOut',
-        z : this.shadow.initZ
+        z : game.current.shadow.initZ
     });
 };
 Block.update = function() {
-    if (this.order == 19) {
-        this.record.rotation.y += 0.01;
+    if (game.current.order == 19) {
+        game.current.record.rotation.y += 0.01;
     }
-    if (this.status === 'stop')
+    if (currentStatus != statusDefine['press'])
         return;
-    if (this.status === 'shrink') {
-        this._shrink();
-    } else if (this.status === 'popup') {
-        // this._popup();
+    if (game.current.status === 'shrink') {
+        Block._shrink();
+    } else if (game.current.status === 'popup') {
     }
 };
 
 Block.pool = [];
 Block.poolInit = function() {
     for (var i = 2; i < 96; i++) {
-        // Block.pool.push(Block(Math.floor(Math.random()*30)));
-        Block.pool.push(Block(17));
+        Block.pool.push(Block(Math.floor(Math.random() * 30)));
     }
     shuffleArray(Block.pool);
 };
 Block.first = Block(0);
+Block.change(Block.first, null, null, 1);
 Block.second = Block(1);
+Block.change(Block.second, null, null, 1);
 Block.poolInit();
 Block.next = function() {
-    return Block.pool.pop();
+    var b = Block.pool.pop();
+    Block.change(b);
+    return b;
 };
 function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
@@ -1391,6 +1385,7 @@ function shuffleArray(array) {
 }
 
 Block.egg = function(block) {
+    console.info(block.order)
     if (block.order == 19) {
         audio.delay('sing', 2000);
     } else if (block.order == 24) {
@@ -1409,6 +1404,8 @@ Block.egg = function(block) {
             Block.rotateBox(block);
         }
         window.setTimeout(e, 2000);
+    } else if (block.order == 15) {
+        Block.glow(block);
     }
 };
 Block.eggEnd = function(block) {

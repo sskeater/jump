@@ -3,18 +3,22 @@ if (!window.requestAnimationFrame) {
         setTimeout(fn, 17);
     };
 }
-var customAnimation  = {};
-customAnimation.to = function (obj, duration, options) {
+var customAnimation = {};
+customAnimation.to = function(obj, duration, options) {
     duration *= 1000;
     var delay = options.delay || 0;
-    for (var name in options) {
+    for ( var name in options) {
         if (name === 'delay') {
             delay = options[name];
-        } else if (name === 'onComplete') {} else if (name === 'ease') {} else {
-            setTimeout(function (name) {
-                return function () {
-                    //console.log("name", name, obj[name], options[name], duration, delay, obj)
-                    TweenAnimation(obj[name], options[name], duration, options.ease || 'Linear', function (value, complete) {
+        } else if (name === 'onComplete') {
+        } else if (name === 'ease') {
+        } else {
+            setTimeout(function(name) {
+                return function() {
+                    // console.log("name", name, obj[name], options[name],
+                    // duration, delay, obj)
+                    TweenAnimation(obj[name], options[name], duration, options.ease || 'Linear', function(value,
+                            complete) {
                         obj[name] = value;
                         if (complete) {
                             options.onComplete && options.onComplete();
@@ -102,26 +106,34 @@ function moveGradually(vector, duration) {
 }
 
 function jump(vector, duration, callback) {
+    customAnimation.to(game.man.body.scale, 0.25, {
+        x : 1,
+        y : 1,
+        z : 1
+    });
+    game.man.head.position.y = 4.725;
+    game.man.scale = 1;
     var c = 160;
-    TweenAnimation(game.man.position.y, game.man.position.y + 4, duration * c / 2, 'Linear', function(value, complete) {
-        game.man.position.y = value;
+    TweenAnimation(game.man.bottle.position.y, game.man.bottle.position.y + 4, duration * c / 2, 'Linear', function(
+            value, complete) {
+        game.man.bottle.position.y = value;
         if (complete) {
-            TweenAnimation(game.man.position.y, game.man.position.y - 4, duration * c / 2, 'Linear', function(value,
-                    complete) {
-                game.man.position.y = value;
-            });
+            TweenAnimation(game.man.bottle.position.y, game.man.bottle.position.y - 4, duration * c / 2, 'Linear',
+                    function(value, complete) {
+                        game.man.bottle.position.y = value;
+                    });
         }
     });
-    TweenAnimation(game.man.position.x, game.man.position.x + vector.x, duration * c, 'Linear', function(value,
-            complete) {
-        game.man.position.x = value;
+    TweenAnimation(game.man.bottle.position.x, game.man.bottle.position.x + vector.x, duration * c, 'Linear', function(
+            value, complete) {
+        game.man.bottle.position.x = value;
         if (complete) {
             callback();
         }
     });
-    TweenAnimation(game.man.position.z, game.man.position.z + vector.z, duration * c, 'Linear', function(value,
-            complete) {
-        game.man.position.z = value;
+    TweenAnimation(game.man.bottle.position.z, game.man.bottle.position.z + vector.z, duration * c, 'Linear', function(
+            value, complete) {
+        game.man.bottle.position.z = value;
     });
 
 }
@@ -137,6 +149,11 @@ function animate() {
     requestAnimationFrame(animate, true);
     if (tickTime > 100)
         return;
+    if (currentStatus == statusDefine['start']) {
+    } else if (currentStatus == statusDefine['press']) {
+        bottle._prepare();
+        Block.update();
+    }
     refresh();
 }
 animate();

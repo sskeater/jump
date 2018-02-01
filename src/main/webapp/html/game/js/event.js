@@ -27,6 +27,7 @@ gameEvent.start = function(e) {
     if (currentStatus != statusDefine['start']) {
         return;
     }
+    Block.shrink();
     Block.eggEnd(game.current);
     audio.begin('press');
     gameEvent.startTime = new Date().getTime();
@@ -37,14 +38,16 @@ gameEvent.press = function(e) {
     if (currentStatus != statusDefine['press']) {
         return;
     }
+    Block.rebound();
     audio.end('press');
+    audio.stop();
     currentStatus = statusDefine['moving'];
     var length = parseInt(Math.random() * 10 + 20);
 
     var desX = game.next.obj.position.x;
     var desZ = game.next.obj.position.z;
 
-    var startV = game['man'].position.clone();
+    var startV = game['man'].bottle.position.clone();
     var diff = game.next.obj.position.clone().sub(startV);
 
     audio.begin('success');
@@ -70,8 +73,10 @@ gameEvent.press = function(e) {
         cameraV.z /= 2;
         game.current = game.next;
         game.next = next;
+        Block.change(game.next, null, null, 1);
         game.heap.push(next);
         game.third = Block.next();
+        Block.change(game.third, null, null, 1);
         var duration = cameraV.length() / 10;
         if (game.heap.length > 5) {
             var unuse = game.heap.shift();

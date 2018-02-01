@@ -41,5 +41,10 @@ var audio = {
             audio[target].pause();
             audio[target].currentTime = 0;
         }
+    },
+    stop : function() {
+        audio.end('sing');
+        audio.end('water');
+        audio.end('store');
     }
 };
