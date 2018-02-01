@@ -27,6 +27,7 @@ gameEvent.start = function(e) {
     if (currentStatus != statusDefine['start']) {
         return;
     }
+    Block.eggEnd(game.current);
     audio.begin('press');
     gameEvent.startTime = new Date().getTime();
     currentStatus = statusDefine['press'];
@@ -40,11 +41,11 @@ gameEvent.press = function(e) {
     currentStatus = statusDefine['moving'];
     var length = parseInt(Math.random() * 10 + 20);
 
-    var desX = game.next.position.x;
-    var desZ = game.next.position.z;
+    var desX = game.next.obj.position.x;
+    var desZ = game.next.obj.position.z;
 
     var startV = game['man'].position.clone();
-    var diff = game.next.position.clone().sub(startV);
+    var diff = game.next.obj.position.clone().sub(startV);
 
     audio.begin('success');
     jump(diff, diff.length() / 15, jumpOver);
@@ -55,15 +56,15 @@ gameEvent.press = function(e) {
         index++;
         var next = game.third;
         if (left) {
-            next.position.x = desX;
-            next.position.z = desZ - length;
+            next.obj.position.x = desX;
+            next.obj.position.z = desZ - length;
         } else {
-            next.position.x = desX + length;
-            next.position.z = desZ;
+            next.obj.position.x = desX + length;
+            next.obj.position.z = desZ;
         }
         nextLeft = left;
-        var firstV = game.next.position.clone().sub(game.current.position);
-        var secondV = next.position.clone().sub(game.next.position);
+        var firstV = game.next.obj.position.clone().sub(game.current.obj.position);
+        var secondV = next.obj.position.clone().sub(game.next.obj.position);
         var cameraV = firstV.add(secondV);
         cameraV.x /= 2;
         cameraV.z /= 2;
@@ -76,7 +77,8 @@ gameEvent.press = function(e) {
             var unuse = game.heap.shift();
             scene.remove(unuse);
         }
-        scene.add(next);
+        scene.add(next.obj);
         moveGradually(cameraV, duration);
+        Block.egg(game.current);
     }
 };

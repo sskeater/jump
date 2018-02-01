@@ -3,7 +3,28 @@ if (!window.requestAnimationFrame) {
         setTimeout(fn, 17);
     };
 }
-
+var customAnimation  = {};
+customAnimation.to = function (obj, duration, options) {
+    duration *= 1000;
+    var delay = options.delay || 0;
+    for (var name in options) {
+        if (name === 'delay') {
+            delay = options[name];
+        } else if (name === 'onComplete') {} else if (name === 'ease') {} else {
+            setTimeout(function (name) {
+                return function () {
+                    //console.log("name", name, obj[name], options[name], duration, delay, obj)
+                    TweenAnimation(obj[name], options[name], duration, options.ease || 'Linear', function (value, complete) {
+                        obj[name] = value;
+                        if (complete) {
+                            options.onComplete && options.onComplete();
+                        }
+                    });
+                };
+            }(name), delay * 1000);
+        }
+    }
+};
 function TweenAnimation(from, to, duration, easing, callback) {
     var options = {
         duration : duration || 300,

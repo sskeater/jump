@@ -11,15 +11,33 @@ var audio = {
     combo6 : document.getElementById('combo6'),
     combo7 : document.getElementById('combo7'),
     combo8 : document.getElementById('combo8'),
-    begin : function(target) {
+    sing : document.getElementById('sing'),
+    store : document.getElementById('store'),
+    water : document.getElementById('water'),
+    begin : function(target, callback) {
         target = target == 'combo' ? 'combo' + Math.ceil(Math.random() * 8) : target;
         if (audio[target]) {
+            audio[target].currentTime = 0;
             audio[target].play();
+            if (typeof callback == 'function') {
+                audio[target].onended = callback;
+            }
         }
+    },
+    delay : function(target, time) {
+        function t() {
+            if (audio[target]) {
+                audio[target].currentTime = 0;
+                audio[target].play();
+                if (typeof callback == 'function') {
+                    audio[target].onended = callback;
+                }
+            }
+        }
+        window.setTimeout(t, time);
     },
     end : function(target) {
         if (audio[target]) {
-            audio[target].play();
             audio[target].pause();
             audio[target].currentTime = 0;
         }

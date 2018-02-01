@@ -213,16 +213,16 @@ var game = {};
 game.heap = [];
 game.initUI = function() {
     var first = Block.first;
-    first.position.x = 0;
+    first.obj.position.x = 0;
     game.current = first;
     game.heap.push(first);
-    scene.add(first);
+    scene.add(first.obj);
 
     var next = Block.second;
-    next.position.x = 20;
+    next.obj.position.x = 20;
     game.next = next;
     game.heap.push(next);
-    scene.add(next);
+    scene.add(next.obj);
 
     game.third = Block.next();
 
