@@ -19,8 +19,8 @@ config.BLOCK = {
     height : 5.5,
     radiusSegments : [ 4, 50 ],
     floatHeight : 0,
-    minDistance : 1,
-    maxDistance : 17,
+    minDistance : 20,
+    maxDistance : 30,
     minScale : BOTTLE.minScale,
     reduction : BOTTLE.reduction,
     moveDownVelocity : 0.07,
@@ -1132,36 +1132,6 @@ Block.rotateBox = function(block) {
         y : -Math.PI / 2
     });
 };
-Block.playMusic = function() {
-    var _this2 = this;
-
-    for (var i = 0; i < 2; ++i) {
-        setTimeout(function(icon) {
-            return function() {
-                icon.visible = true;
-                icon.position.set(0, 0, 0);
-                icon.material.opacity = 1;
-                _animation.customAnimation.to(icon.position, 2, {
-                    x : 5 * (1 - 2 * Math.random()),
-                    y : 15,
-                    z : 5 * (1 - 2 * Math.random())
-                });
-                _animation.customAnimation.to(icon.material, 2, {
-                    opacity : 0
-                });
-            };
-        }(this.icons[i]), i * 1000);
-    }
-    this.musicTimer = setTimeout(function() {
-        _this2.playMusic();
-    }, 2500);
-};
-Block.stopMusic = function() {
-    if (this.musicTimer) {
-        clearTimeout(this.musicTimer);
-        this.musicTimer = null;
-    }
-};
 Block.change = function(block, radius, t, radiusScale) {
     if (!block.canChange) {
         return;
@@ -1361,6 +1331,7 @@ Block.update = function() {
 Block.pool = [];
 Block.poolInit = function() {
     for (var i = 2; i < 96; i++) {
+//        Block.pool.push(Block(21));
         Block.pool.push(Block(Math.floor(Math.random() * 30)));
     }
     shuffleArray(Block.pool);
@@ -1385,7 +1356,6 @@ function shuffleArray(array) {
 }
 
 Block.egg = function(block) {
-    console.info(block.order)
     if (block.order == 19) {
         audio.delay('sing', 2000);
     } else if (block.order == 24) {
@@ -1400,10 +1370,7 @@ Block.egg = function(block) {
     } else if (block.order == 26) {
         audio.delay('water', 2000);
     } else if (block.order == 17) {
-        function e() {
-            Block.rotateBox(block);
-        }
-        window.setTimeout(e, 2000);
+        Block.rotateBox(block);
     } else if (block.order == 15) {
         Block.glow(block);
     }

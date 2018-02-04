@@ -114,14 +114,16 @@ function jump(vector, duration, callback) {
     game.man.head.position.y = 4.725;
     game.man.scale = 1;
     var c = 160;
-    TweenAnimation(game.man.bottle.position.y, game.man.bottle.position.y + 4, duration * c / 2, 'Linear', function(
-            value, complete) {
+    console.info(duration)
+    TweenAnimation(game.man.bottle.position.y, 8, duration * c / 2, 'Linear', function(value, complete) {
         game.man.bottle.position.y = value;
         if (complete) {
-            TweenAnimation(game.man.bottle.position.y, game.man.bottle.position.y - 4, duration * c / 2, 'Linear',
-                    function(value, complete) {
-                        game.man.bottle.position.y = value;
-                    });
+            TweenAnimation(game.man.bottle.position.y, 4, duration * c / 2, 'Linear', function(value, complete) {
+                game.man.bottle.position.y = value;
+                if (complete) {
+                    game.man.bottle.position.y = 4;
+                }
+            });
         }
     });
     TweenAnimation(game.man.bottle.position.x, game.man.bottle.position.x + vector.x, duration * c, 'Linear', function(

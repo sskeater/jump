@@ -38,24 +38,60 @@ gameEvent.press = function(e) {
     if (currentStatus != statusDefine['press']) {
         return;
     }
+    gameEvent.endTime = new Date().getTime();
     Block.rebound();
     audio.end('press');
     audio.stop();
     currentStatus = statusDefine['moving'];
-    var length = parseInt(Math.random() * 10 + 20);
+    var length = parseInt(Math.random() * (config.BLOCK.maxDistance - config.BLOCK.minDistance)
+            + config.BLOCK.minDistance);
 
     var desX = game.next.obj.position.x;
     var desZ = game.next.obj.position.z;
 
+    var t = (gameEvent.endTime - gameEvent.startTime);
+    var distance = config.speed * t;
+
+    var destination = game['man'].bottle.position.clone().add(
+            game.left ? new THREE.Vector3(0, 0, -distance) : new THREE.Vector3(distance, 0, 0));
+    // 换方向时，要对坐标进行修正，以防拐弯时跑偏
+    if (game.left != game.beforeLeft) {
+        if (game.left) {
+            destination.x = desX;
+        } else {
+            destination.z = desZ;
+        }
+    }
+
     var startV = game['man'].bottle.position.clone();
-    var diff = game.next.obj.position.clone().sub(startV);
 
-    audio.begin('success');
-    jump(diff, diff.length() / 15, jumpOver);
+    var hit = gameEvent.hit(game.next.obj.position.clone(), destination.clone());
+    // hit = gameEvent.hit(game.next.obj.position.clone(),
+    // game.next.obj.position.clone());
 
-    function jumpOver() {
-        audio.begin('combo');
-        var left = Math.random() > 0.7;
+    var diff = destination.clone().sub(startV);
+    // diff = game.next.obj.position.clone().sub(startV);
+    var deviation = config.BLOCK.width / 2 - hit;
+    if (deviation > 0) {
+        jump(diff, diff.length() / 15, jumpSuccessOver);
+        game.beforeLeft = game.left;
+    } else {
+        audio.begin('fall');
+        game.deviation = deviation;
+        jump(diff, diff.length() / 15, bottle.fall);
+    }
+
+    function jumpSuccessOver() {
+        if (deviation > 4) {
+            // 命中靶心
+            game.doubleHit++;
+            game.doubleHit = Math.min(game.doubleHit, 8);
+            audio.begin('combo' + game.doubleHit);
+        } else {
+            audio.begin('success');
+            game.doubleHit = 0;
+        }
+        var left = Math.random() > 0.5;
         index++;
         var next = game.third;
         if (left) {
@@ -65,7 +101,7 @@ gameEvent.press = function(e) {
             next.obj.position.x = desX + length;
             next.obj.position.z = desZ;
         }
-        nextLeft = left;
+        game.left = left;
         var firstV = game.next.obj.position.clone().sub(game.current.obj.position);
         var secondV = next.obj.position.clone().sub(game.next.obj.position);
         var cameraV = firstV.add(secondV);
@@ -86,4 +122,8 @@ gameEvent.press = function(e) {
         moveGradually(cameraV, duration);
         Block.egg(game.current);
     }
+};
+
+gameEvent.hit = function(p0, p1) {
+    return Math.abs((p0.x - p1.x) + (p0.z - p1.z));
 };
