@@ -146,9 +146,8 @@ bottle.fall = function() {
         }
     } else {
         // 没碰着
-        TweenAnimation(game.man.bottle.position.y, config.BLOCK.height / 2 - 0.3, 400, 'Linear', function(value,
-                complete) {
+        TweenAnimation(game.man.bottle.position.y, 0, 400, 'Linear', function(value, complete) {
             game.man.bottle.position.y = value;
         });
     }
-}
+};
