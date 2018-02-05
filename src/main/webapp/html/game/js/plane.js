@@ -95,5 +95,10 @@ plane.drawOver = function() {
 
     var ctx1 = plane.context['btn'];
     ctx1.clearRect(0, 0, WIDTH, HEIGHT);
-    plane.drawImageCenter('res/play.png', tools.cx(207), tools.cy(587), tools.cwh(208), tools.cwh(78), 'btn', 'btn');
+    plane.drawImageCenter('res/replay.png', tools.cx(207), tools.cy(587), tools.cwh(208), tools.cwh(78), 'btn', 'btn');
+};
+
+plane.hideForReplay = function() {
+    plane.hide('over');
+    plane.hide('btn');
 };

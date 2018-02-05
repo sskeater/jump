@@ -9,13 +9,14 @@ var WIDTH = W * Dpr; // 设备像素
 var frustumSizeHeight = config.FRUSTUMSIZE; // 动画的尺寸单位坐标高度
 var frustumSizeWidth = WIDTH / HEIGHT * frustumSizeHeight; // 动画的尺寸单位坐标高度
 var aspect = WIDTH / HEIGHT;
-var render, secne, camera;
+var render, secne, camera, shadowLight;
 var statusDefine = {
     init : 'init',// 初始化
     ready : 'ready',// 准备好了
     start : 'start',// 游戏开始
     press : 'press',// 屏幕按下，准备起跳
     moving : 'moving',// 蓄力结束，开始跳
+    over : 'over',// 失败
     end : 'end',// 游戏结束
 };
 config.speed = 40 / 1000;
@@ -41,7 +42,7 @@ function main() {
     scene.add(AxesHelper);
 
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    var shadowLight = new THREE.DirectionalLight(0xffffff, 0.28);
+    shadowLight = new THREE.DirectionalLight(0xffffff, 0.28);
     shadowLight.position.set(0, 15, 10);
     scene.add(shadowLight);
     scene.add(ambientLight);
@@ -95,8 +96,22 @@ game.start = function() {
     plane.drawLevel();
 };
 
-game.reset = function(){
-    
+game.reset = function() {
+    scene.remove(game['man'].bottle);
+    for (var i = 0, len = scene.children.length; i < len; i++) {
+        if (scene.children[i]['name'] == 'block') {
+            scene.remove(scene.children[i]);
+            i--;
+            len--;
+        }
+    }
+    Block.poolInit();
+    camera.position.set(-17, 30, 26);
+    camera.lookAt(new THREE.Vector3(13, 0, -4));
+    shadowLight.position.set(0, 15, 10);
+
+    game.initUI();
+    game.start();
 };
 
 var imgLoader = {

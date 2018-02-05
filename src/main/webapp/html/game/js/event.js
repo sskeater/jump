@@ -25,6 +25,12 @@ function clickEnd(e) {
             plane.hideForStart();
             game.start();
         }
+    } else if (currentStatus == statusDefine['over']) {
+        // 点击重新开始
+        if (pageX > 100 && pageX < 320 && pageY > 515 && pageY < 645) {
+            plane.hideForReplay();
+            game.reset();
+        }
     }
 
     // 蓄力结束，准备起跳
@@ -55,8 +61,6 @@ gameEvent.press = function(e) {
     audio.end('press');
     audio.stop();
     currentStatus = statusDefine['moving'];
-    var length = parseInt(Math.random() * (config.BLOCK.maxDistance - config.BLOCK.minDistance)
-            + config.BLOCK.minDistance);
 
     var desX = game.next.obj.position.x;
     var desZ = game.next.obj.position.z;
@@ -74,72 +78,84 @@ gameEvent.press = function(e) {
             destination.z = desZ;
         }
     }
-
+    var h = Math.min(Math.ceil(t / 1000), 4);
     var startV = game['man'].bottle.position.clone();
-
-    var hit = gameEvent.hit(game.next.obj.position.clone(), destination.clone());
-    // hit = gameEvent.hit(game.next.obj.position.clone(),
-    // game.next.obj.position.clone());
-
     var diff = destination.clone().sub(startV);
-    // diff = game.next.obj.position.clone().sub(startV);
+
+    // 先判断有没有跳出当前的block
+    var hit = gameEvent.hit(game.current.obj.position.clone(), destination.clone());
     var deviation = config.BLOCK.width / 2 - hit;
+    if (game.next.order == 29) {
+        deviation = config.BLOCK.width / 4 - hit;
+    }
     if (deviation > 0) {
-        jump(diff, diff.length() / 15, jumpSuccessOver);
+        jump(diff, diff.length() / 15, null, h);
+        currentStatus = statusDefine['start'];
+        return;
+    }
+    // 然后判断有没有调到下一个block
+    hit = gameEvent.hit(game.next.obj.position.clone(), destination.clone());
+    game.deviation = config.BLOCK.width / 2 - hit;
+    if (game.next.order == 29) {
+        game.deviation = config.BLOCK.width / 4 - hit;
+    }
+    if (game.deviation > 0) {
+        jump(diff, diff.length() / 15, gameEvent.jumpSuccess, h);
         game.beforeLeft = game.left;
     } else {
         audio.begin('fall');
-        game.deviation = deviation;
-        jump(diff, diff.length() / 15, bottle.fall);
-        currentStatus = statusDefine['ready'];
+        jump(diff, diff.length() / 15, bottle.fall, h);
+        currentStatus = statusDefine['over'];
         setTimeout(plane.drawOver, 1000);
-    }
-
-    function jumpSuccessOver() {
-        game.level++;
-        if (deviation > 4) {
-            // 命中靶心
-            game.doubleHit++;
-            game.doubleHit = Math.min(game.doubleHit, 8);
-            audio.begin('combo' + game.doubleHit);
-        } else {
-            audio.begin('success');
-            game.doubleHit = 0;
-        }
-        game.score += game.doubleHit > 0 ? game.doubleHit * 2 : 1;
-        var next = game.third;
-        var left = next.number < game.current.number;
-        if (left) {
-            next.obj.position.x = desX;
-            next.obj.position.z = desZ - length;
-        } else {
-            next.obj.position.x = desX + length;
-            next.obj.position.z = desZ;
-        }
-        game.left = left;
-        var firstV = game.next.obj.position.clone().sub(game.current.obj.position);
-        var secondV = next.obj.position.clone().sub(game.next.obj.position);
-        var cameraV = firstV.add(secondV);
-        cameraV.x /= 2;
-        cameraV.z /= 2;
-        game.current = game.next;
-        game.next = next;
-        Block.change(game.next, null, null, 1);
-        game.heap.push(next);
-        game.third = Block.next();
-        Block.change(game.third, null, null, 1);
-        var duration = cameraV.length() / 10;
-        if (game.heap.length > 5) {
-            var unuse = game.heap.shift();
-            scene.remove(unuse);
-        }
-        scene.add(next.obj);
-        moveGradually(cameraV, duration);
-        Block.egg(game.current);
-        plane.drawLevel();
     }
 };
 
 gameEvent.hit = function(p0, p1) {
     return Math.abs((p0.x - p1.x) + (p0.z - p1.z));
+};
+
+gameEvent.jumpSuccess = function() {
+    game.level++;
+    if (game.deviation > 3) {
+        // 命中靶心
+        game.doubleHit++;
+        game.doubleHit = Math.min(game.doubleHit, 8);
+        audio.begin('combo' + game.doubleHit);
+    } else {
+        audio.begin('success');
+        game.doubleHit = 0;
+    }
+    game.score += game.doubleHit > 0 ? game.doubleHit * 2 : 1;
+    var next = game.third;
+    var left = next.number < game.current.number;
+    var length = parseInt(Math.random() * (config.BLOCK.maxDistance - config.BLOCK.minDistance)
+            + config.BLOCK.minDistance);
+    if (left) {
+        next.obj.position.x = game.next.obj.position.x;
+        next.obj.position.z = game.next.obj.position.z - length;
+    } else {
+        next.obj.position.x = game.next.obj.position.x + length;
+        next.obj.position.z = game.next.obj.position.z;
+    }
+    game.left = left;
+    var firstV = game.next.obj.position.clone().sub(game.current.obj.position);
+    var secondV = next.obj.position.clone().sub(game.next.obj.position);
+    var cameraV = firstV.add(secondV);
+    cameraV.x /= 2;
+    cameraV.z /= 2;
+    game.current = game.next;
+    game.next = next;
+    Block.change(game.next, null, null, 1);
+    game.heap.push(next);
+    game.third = Block.next();
+    Block.change(game.third, null, null, 1);
+    var duration = cameraV.length() / 10;
+    if (game.heap.length > 5) {
+        var unuse = game.heap.shift();
+        scene.remove(unuse.obj);
+    }
+    scene.add(next.obj);
+    moveGradually(cameraV, duration);
+    Block.egg(game.current);
+    plane.drawLevel();
 };

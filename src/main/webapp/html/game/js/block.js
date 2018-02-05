@@ -1330,17 +1330,18 @@ Block.update = function() {
 
 Block.pool = [];
 Block.poolInit = function() {
+    Block.first = Block(0);
+    Block.change(Block.first, null, null, 1);
+    Block.second = Block(1);
+    Block.change(Block.second, null, null, 1);
     for (var i = 2; i < 96; i++) {
-        var b = Block(Math.floor(Math.random() * 30));
+         var b = Block(Math.floor(Math.random() * 30));
+//        var b = Block(29);
         b.number = Math.random();
         Block.pool.push(b);
     }
     shuffleArray(Block.pool);
 };
-Block.first = Block(0);
-Block.change(Block.first, null, null, 1);
-Block.second = Block(1);
-Block.change(Block.second, null, null, 1);
 Block.poolInit();
 Block.next = function() {
     var b = Block.pool.pop();

@@ -103,7 +103,7 @@ function moveGradually(vector, duration) {
     });
 }
 
-function jump(vector, duration, callback) {
+function jump(vector, duration, callback, h) {
     customAnimation.to(game.man.body.scale, 0.25, {
         x : 1,
         y : 1,
@@ -112,10 +112,11 @@ function jump(vector, duration, callback) {
     game.man.head.position.y = 4.725;
     game.man.scale = 1;
     var c = 160;
-    TweenAnimation(game.man.bottle.position.y, 8, duration * c / 2, 'Linear.easeIn', function(value, complete) {
+    TweenAnimation(game.man.bottle.position.y, 8 + h, duration * c / 2, 'Linear.easeIn', function(value, complete) {
         game.man.bottle.position.y = value;
         if (complete) {
-            TweenAnimation(game.man.bottle.position.y, 4, duration * c / 2, 'Linear.easeOut', function(value, complete) {
+            TweenAnimation(game.man.bottle.position.y, 4 + h, duration * c / 2, 'Linear.easeOut', function(value,
+                    complete) {
                 game.man.bottle.position.y = value;
                 if (complete) {
                     game.man.bottle.position.y = 4;
@@ -126,7 +127,7 @@ function jump(vector, duration, callback) {
     TweenAnimation(game.man.bottle.position.x, game.man.bottle.position.x + vector.x, duration * c, 'Linear', function(
             value, complete) {
         game.man.bottle.position.x = value;
-        if (complete) {
+        if (complete && typeof callback == 'function') {
             callback();
         }
     });
