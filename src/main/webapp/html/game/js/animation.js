@@ -15,8 +15,6 @@ customAnimation.to = function(obj, duration, options) {
         } else {
             setTimeout(function(name) {
                 return function() {
-                    // console.log("name", name, obj[name], options[name],
-                    // duration, delay, obj)
                     TweenAnimation(obj[name], options[name], duration, options.ease || 'Linear', function(value,
                             complete) {
                         obj[name] = value;
@@ -114,11 +112,10 @@ function jump(vector, duration, callback) {
     game.man.head.position.y = 4.725;
     game.man.scale = 1;
     var c = 160;
-    console.info(duration)
-    TweenAnimation(game.man.bottle.position.y, 8, duration * c / 2, 'Linear', function(value, complete) {
+    TweenAnimation(game.man.bottle.position.y, 8, duration * c / 2, 'Linear.easeIn', function(value, complete) {
         game.man.bottle.position.y = value;
         if (complete) {
-            TweenAnimation(game.man.bottle.position.y, 4, duration * c / 2, 'Linear', function(value, complete) {
+            TweenAnimation(game.man.bottle.position.y, 4, duration * c / 2, 'Linear.easeOut', function(value, complete) {
                 game.man.bottle.position.y = value;
                 if (complete) {
                     game.man.bottle.position.y = 4;

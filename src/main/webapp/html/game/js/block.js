@@ -1331,8 +1331,9 @@ Block.update = function() {
 Block.pool = [];
 Block.poolInit = function() {
     for (var i = 2; i < 96; i++) {
-//        Block.pool.push(Block(21));
-        Block.pool.push(Block(Math.floor(Math.random() * 30)));
+        var b = Block(Math.floor(Math.random() * 30));
+        b.number = Math.random();
+        Block.pool.push(b);
     }
     shuffleArray(Block.pool);
 };

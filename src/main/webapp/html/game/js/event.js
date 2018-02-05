@@ -13,8 +13,20 @@ function clickStart(e) {
     }
 }
 
-var index = 0;
 function clickEnd(e) {
+    var pageX = e.changedTouches[0].pageX;
+    var pageY = e.changedTouches[0].pageY;
+
+    pageX = tools.cxp(pageX);
+    pageY = tools.cyp(pageY);
+    if (currentStatus == statusDefine['ready']) {
+        // 点击开始
+        if (pageX > 100 && pageX < 320 && pageY > 515 && pageY < 645) {
+            plane.hideForStart();
+            game.start();
+        }
+    }
+
     // 蓄力结束，准备起跳
     if (currentStatus == statusDefine['press']) {
         gameEvent.press(e);
@@ -79,9 +91,12 @@ gameEvent.press = function(e) {
         audio.begin('fall');
         game.deviation = deviation;
         jump(diff, diff.length() / 15, bottle.fall);
+        currentStatus = statusDefine['ready'];
+        setTimeout(plane.drawOver, 1000);
     }
 
     function jumpSuccessOver() {
+        game.level++;
         if (deviation > 4) {
             // 命中靶心
             game.doubleHit++;
@@ -91,9 +106,9 @@ gameEvent.press = function(e) {
             audio.begin('success');
             game.doubleHit = 0;
         }
-        var left = Math.random() > 0.5;
-        index++;
+        game.score += game.doubleHit > 0 ? game.doubleHit * 2 : 1;
         var next = game.third;
+        var left = next.number < game.current.number;
         if (left) {
             next.obj.position.x = desX;
             next.obj.position.z = desZ - length;
@@ -121,6 +136,7 @@ gameEvent.press = function(e) {
         scene.add(next.obj);
         moveGradually(cameraV, duration);
         Block.egg(game.current);
+        plane.drawLevel();
     }
 };
 
